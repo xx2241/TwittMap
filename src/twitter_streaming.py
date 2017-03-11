@@ -34,12 +34,15 @@ class TweetStreamListener(tweepy.StreamListener):
                         'timestamp': timestamp,
                         'coordinates': coordinates,
                     }
-                    print (mapping)
-
-                    res = self.es.index(index="twittmap", doc_type='tweet', id=cur_data['user']['id'], body=mapping)
-                    print ("Push Status: ", (res['created']))
-        except:
-            print ("Error Here!")
+                    #print (mapping)
+                    try:
+                        res = self.es.index(index="twittmap", doc_type='tweet', id=cur_data['user']['id'], body=mapping)
+                        print ("Push Status: ", (res['created']))
+                        print(keyword)
+                    except:
+                        pass
+        except Exception as e:
+            print (str(e))
 
 
     def on_status(self, status):
@@ -53,7 +56,6 @@ class TweetStreamListener(tweepy.StreamListener):
 def getCoordinates(api_key, location):
     api_key = api_key.decode('utf-8')
     api_response = requests.get('https://maps.googleapis.com/maps/api/geocode/json?address={0}&key={1}'.format(location, api_key))
-    print (api_response)
     api_response_dict = api_response.json()
     if api_response_dict['status'] == "OK":
         latitude = api_response_dict['results'][0]['geometry']['location']['lat']
