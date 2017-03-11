@@ -1,0 +1,25 @@
+curl -XPUT search-twittmap-ky-fgzbfoahxmx2okmyighape3sgq.us-east-1.es.amazonaws.com/twittmap -d '
+{
+    "mappings": {
+        "tweet": {
+            "properties": {
+                "keyword": {
+                    "type": "string"
+                },
+                "author": {
+                    "type": "string",
+                    "index": "not_analyzed"
+                },
+                "text": {
+                    "type": "string"
+                },
+                "timestamp": {
+                    "type": "date"
+                },
+                "coordinates": {
+                    "type": "geo_point"
+                }
+            }
+        }
+    }
+}'

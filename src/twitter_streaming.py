@@ -2,6 +2,7 @@ import json
 import tweepy
 import requests
 from elasticsearch import Elasticsearch
+from dateutil import parser
 from datetime import datetime
 
 
@@ -14,29 +15,32 @@ class TweetStreamListener(tweepy.StreamListener):
 
     def on_data(self, data):
         # Load the json to a string
-        cur_data = json.loads(data)
-        location = cur_data['user']['location']
-        if location and cur_data['lang'] == 'en':
-            text = cur_data['text']
-            keyword = getKeyWord(text)
-            api_key = getApiKey()
-            coordinates = getCoordinates(api_key, location)
-            # print cur_data['created_at']
-            if keyword and coordinates:
-                mapping = {
-                    'keyword': keyword,
-                    'author': cur_data['user']['screen_name'],
-                    'text': text,
-                    'timestamp': cur_data['created_at'],
+        try:
+            cur_data = json.loads(data)
+            location = cur_data['user']['location']
+            if location and cur_data['lang'] == 'en':
+                text = cur_data['text']
+                keyword = getKeyWord(text)
+                api_key = getApiKey()
+                coordinates = getCoordinates(api_key, location)
+                timestamp = parser.parse(cur_data['created_at'])
+                timestamp = timestamp.strftime('%Y-%m-%dT%H:%M:%SZ')
+                if keyword and coordinates:
+                    mapping = {
+                        'keyword': keyword,
+                        'author': cur_data['user']['screen_name'],
+                        'text': text,
                     #'location': location,
-                    'coordinates': coordinates
-                }
-                print mapping
+                        'timestamp': timestamp,
+                        'coordinates': coordinates,
+                    }
+                    print (mapping)
 
-                res = self.es.index(index="twittmap", doc_type='tweet', id=cur_data['user']['id'], body=mapping)
-                print(res['created'])
+                    res = self.es.index(index="twittmap", doc_type='tweet', id=cur_data['user']['id'], body=mapping)
+                    print ("Push Status: ", (res['created']))
+        except:
+            print ("Error Here!")
 
-        return True
 
     def on_status(self, status):
         print ("Status: " + status.text)
@@ -47,7 +51,9 @@ class TweetStreamListener(tweepy.StreamListener):
 
 
 def getCoordinates(api_key, location):
+    api_key = api_key.decode('utf-8')
     api_response = requests.get('https://maps.googleapis.com/maps/api/geocode/json?address={0}&key={1}'.format(location, api_key))
+    print (api_response)
     api_response_dict = api_response.json()
     if api_response_dict['status'] == "OK":
         latitude = api_response_dict['results'][0]['geometry']['location']['lat']
