@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <style>
       /* Always set the map height explicitly to define the size of the div
        * element that contains the map. */
@@ -16,7 +17,33 @@
     </style>
   </head>
   <body>
-    <div id="map"></div>
+    <div id="container">
+      <!-- Left Side of Page -->
+      <div id="panel"> 
+        <div class="dropdown">
+          <h1 id="twittmap"> TwittMap </h1>
+          <h2 id="choosetag"> Choose a tag: </h2>
+          <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+            Tag Options
+            <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+            <li><a href="#"> a </a></li>
+            <li><a href="#"> b </a></li>
+            <li><a href="#"> c </a></li>
+            <li><a href="#"> d </a></li>
+            <li><a href="#"> Tag 5 </a></li>
+            <li><a href="#"> Tag 6 </a></li>
+            <li><a href="#"> Tag 7 </a></li>
+            <li><a href="#"> Tag 8 </a></li>
+            <li><a href="#"> Tag 9 </a></li>
+            <li><a href="#"> Tag 10 </a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+      <!-- Right Side of Page -->
+      <div id="map"></div>
     <script>
       var map;
       function initMap() {
