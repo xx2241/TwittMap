@@ -14,7 +14,6 @@ class TweetStreamListener(tweepy.StreamListener):
         self.es = es
 
     def on_data(self, data):
-        # Load the json to a string
         try:
             cur_data = json.loads(data)
             location = cur_data['user']['location']
@@ -30,20 +29,16 @@ class TweetStreamListener(tweepy.StreamListener):
                         'keyword': keyword,
                         'author': cur_data['user']['screen_name'],
                         'text': text,
-                    #'location': location,
                         'timestamp': timestamp,
                         'coordinates': coordinates,
                     }
-                    #print (mapping)
                     try:
                         res = self.es.index(index="twittmap", doc_type='tweet', id=cur_data['user']['id'], body=mapping)
-                        print ("Push Status: ", (res['created']))
-                        print(keyword)
+                        print ("Push Status: ", res['created'])
                     except:
-                        pass
+                        print ("Error Here!")
         except Exception as e:
             print (str(e))
-
 
     def on_status(self, status):
         print ("Status: " + status.text)
@@ -78,24 +73,24 @@ def getKeyWord(text):
 
 def getApiKey():
     with open('../config.txt', 'rb') as configfile:
-        api_key = configfile.read().splitlines()[4]
+        api_key = configfile.read().splitlines()[5]
         configfile.close()
     return api_key
 
 
 def getCredentials():
     with open('../config.txt', 'rb') as configfile:
-        CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN, ACCESS_SECRET = configfile.read().splitlines()[0:4]
+        CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN, ACCESS_SECRET, END_POINT = configfile.read().splitlines()[0:5]
         configfile.close()
-    return CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN, ACCESS_SECRET
+    return CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN, ACCESS_SECRET, END_POINT
 
 
 def main():
-    CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN, ACCESS_SECRET = getCredentials()
+    CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN, ACCESS_SECRET, END_POINT = getCredentials()
     auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
     auth.set_access_token(ACCESS_TOKEN, ACCESS_SECRET)
     api = tweepy.API(auth)
-    es = Elasticsearch(hosts="search-twittmap-ky-fgzbfoahxmx2okmyighape3sgq.us-east-1.es.amazonaws.com", port=443, use_ssl=True)
+    es = Elasticsearch(hosts=END_POINT, port=443, use_ssl=True)
     tweetStreamListener = TweetStreamListener(es)
     tweetStream = tweepy.Stream(auth=api.auth, listener=tweetStreamListener)
     tweetStream.filter(track=FILTERED_KEYWORDS, async=True)
