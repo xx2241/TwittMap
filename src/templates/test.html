@@ -1,89 +1,45 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <style>
-      /* Always set the map height explicitly to define the size of the div
-       * element that contains the map. */
-      #map {
-        height: 100%;
-      }
-      /* Optional: Makes the sample page fill the window. */
-      html, body {
-        height: 100%;
-        margin: 0;
-        padding: 0;
-      }
-    </style>
-  </head>
-  <body>
-      <!-- Left Side of Page -->
+<html> 
+<head> 
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" /> 
+  <title>Google Maps Multiple Markers</title> 
+  <script src="http://maps.google.com/maps/api/js?sensor=false" 
+          type="text/javascript"></script>
+</head> 
+<body>
     <form method="post">
         Please select a topic from the dropdown -
         <select name="tags">
-            <option value="#AskNiall">#AskNiall</option>
-            <option value="#NationalPumpkinDay">#NationalPumpkinDay</option>
-            <option value="Joe Walsh">Joe Walsh</option>
+            <option value="China">China</option>
             <option value="Trump">Trump</option>
             <option value="Hillary">Hillary</option>
         </select>
         <input type="submit" value="Plot">
 
     </form>
-      <!-- Right Side of Page -->
-      <div id="map"></div>
-    <script>
-      var map;
-      var plotter;
-      function initMap() {
-          plotter = new google.maps.Geocoder();
-          var markers = {{locs}};
-          plotPoints(markers);
+  <div id="map" style="width: 500px; height: 400px;"></div>
 
-          map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 2,
-          center: new google.maps.LatLng(2.8,-187.3),
-          mapTypeId: 'terrain'
-        });
+  <script type="text/javascript">
+    var locations = {{locs}};
+    console.log(locations)
+    var map = new google.maps.Map(document.getElementById('map'), {
+      zoom: 2,
+      center: new google.maps.LatLng(2.8,-187.3),
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+    });
 
-      function plotPoints(markers) {
-        console.log('marker start');
-        //console.log(markers);
-        for (i=0; i<markers.length; i++)
-        {
-            coordinates = markers[i];
-            console.log("coordinates");
-            plotter.geocode( { 'address': coordinates}, function(queryresults, status) {
-            console.log('geocode')
-              if (status == google.maps.GeocoderStatus.OK) {
-                console.log('marker')
-                var marker = new google.maps.Marker({
-                    map: map,
-                    position: queryresults[0].geometry.location
-                });
-                  marker.addListener('click', toggleBounce);
-              }
-            });
-        }
-      }
-      function toggleBounce() {
-          if (marker.getAnimation() !== null) {
-               marker.setAnimation(null);
-          }
-          else {
-          marker.setAnimation(google.maps.Animation.BOUNCE);
-          }
-      }
+    var infowindow = new google.maps.InfoWindow();
 
+    var marker, i;
 
-        
-      }
+    for (i = 0; i < locations.length; i++) {  
+      marker = new google.maps.Marker({
+        position: new google.maps.LatLng(locations[i][0], locations[i][1]),
+        map: map
+      });
 
-      
-    </script>
-    <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWjWqvTQl4mrI1dUPJzdJO9O2HyG4Trkc
-&callback=initMap">
-    </script>
-  </body>
+    }
+  </script>
+
+</body>
 </html>
