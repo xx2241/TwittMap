@@ -1,3 +1,4 @@
+import sys
 import json
 import tweepy
 import requests
@@ -5,8 +6,13 @@ from elasticsearch import Elasticsearch
 from dateutil import parser
 from datetime import datetime
 
+if sys.version_info[0] == 2:
+    from httplib import IncompleteRead
+else:
+    from http.client import IncompleteRead
 
-FILTERED_KEYWORDS = ['Trump', 'China', 'Python']
+
+FILTERED_KEYWORDS = ['Trump', 'China', 'AlphaGo', 'Columbia University', 'Linux', 'Deep Learning', 'Love', 'Amazon', 'Tencent', 'Baidu']
 
 
 class TweetStreamListener(tweepy.StreamListener):
@@ -36,7 +42,7 @@ class TweetStreamListener(tweepy.StreamListener):
                         res = self.es.index(index="twittmap", doc_type='tweet', id=cur_data['user']['id'], body=mapping)
                         print ("Push Status: ", res['created'])
                     except:
-                        print ("Error Here!")
+                        pass
         except Exception as e:
             print (str(e))
 
@@ -79,7 +85,7 @@ def getApiKey():
 
 
 def getCredentials():
-    with open('../config.txt', 'rb') as configfile:
+    with open('../config.txt', 'r') as configfile:
         CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN, ACCESS_SECRET, END_POINT = configfile.read().splitlines()[0:5]
         configfile.close()
     return CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN, ACCESS_SECRET, END_POINT
@@ -91,9 +97,18 @@ def main():
     auth.set_access_token(ACCESS_TOKEN, ACCESS_SECRET)
     api = tweepy.API(auth)
     es = Elasticsearch(hosts=END_POINT, port=443, use_ssl=True)
-    tweetStreamListener = TweetStreamListener(es)
-    tweetStream = tweepy.Stream(auth=api.auth, listener=tweetStreamListener)
-    tweetStream.filter(track=FILTERED_KEYWORDS, async=True)
+    while True:
+        try:
+            tweetStreamListener = TweetStreamListener(es)
+            tweetStream = tweepy.Stream(auth=api.auth, listener=tweetStreamListener)
+            tweetStream.filter(track=FILTERED_KEYWORDS, async=True)
+        except IncompleteRead:
+        # reconnect and keep trucking
+            continue
+        except KeyboardInterrupt:
+        # exit this loop
+            tweetStream.disconnect()
+            break
 
 
 if __name__ == '__main__':
