@@ -34,11 +34,14 @@
       <div id="map"></div>
     <script>
       var map;
-      var plotter
+      var plotter;
       function initMap(locs) {
           plotter = new google.maps.Geocoder();
-          var markers = locs;
+          console.log('locs: ',{{locs}})
+          var markers = {{locs}};
+          console.log(markers)
           plotPoints(markers);
+
           map = new google.maps.Map(document.getElementById('map'), {
           zoom: 2,
           center: new google.maps.LatLng(2.8,-187.3),
@@ -47,11 +50,12 @@
 
       function plotPoints(markers) {
         console.log('marker start')
+        console.log(markers)
         for (i=0; i<markers; i++)
         {
             coordinates = markers[i];
             plotter.geocode( { 'address': coordinates}, function(queryresults, status) {
-              console.log('geocode')
+            console.log('geocode')
               if (status == google.maps.GeocoderStatus.OK) {
                 console.log('marker')
                 var marker = new google.maps.Marker({
