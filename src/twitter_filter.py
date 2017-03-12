@@ -14,12 +14,19 @@ def tweets_filter(keyword):
     es = Elasticsearch(hosts=END_POINT, port=443, use_ssl=True)
 
     tweet_filter = json.dumps({
-                       "from" : 0, "size" : 10000,
+                       "from" : 0, "size" : 100,
                        "query": {
                            "match": {
                                'keyword': keyword
                            }
-                       }
+                       },
+                       "sort": [
+                           {
+                               "timestamp": {
+                                   "order": "desc"
+                               }
+                           }
+                       ]
                    })
 
     tweets_res = es.search(index="twittmap", doc_type='tweet', body=tweet_filter)
