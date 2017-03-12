@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <title>Google Maps Multiple Markers</title>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyBwscya3QXeuWqVAjv9orSKLKJIEG7w6R8&libraries=visualization"></script>
+  </head>
+  <body>
+    <form method="post">
+      Please select a topic from the dropdown -
+        <select name="tags">
+          <option value="Trump">Trump</option>
+          <option value="China">China</option>
+          <option value="Python">Python</option>
+        </select>
+        <input type="submit" value="Plot">
+    </form>
+
+  <div id="map" style="width: 500px; height: 400px;"></div>
+
+  <script type="text/javascript">
+    var locations = {{locs}};
+    console.log(locations)
+    var map = new google.maps.Map(document.getElementById('map'), {
+      zoom: 2,
+      center: new google.maps.LatLng(40.8, -73.9),
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+    });
+
+    var infowindow = new google.maps.InfoWindow();
+
+    var marker, i;
+    var heatmapData = [];
+
+    for (i = 0; i < locations.length; i++) {
+      var latLng = new google.maps.LatLng(locations[i][0], locations[i][1])
+      heatmapData.push(latLng);
+      //marker = new google.maps.Marker({
+      //  position: latLng,
+      //  map: map
+      //});
+    }
+
+    var heatmap = new google.maps.visualization.HeatmapLayer({
+          data: heatmapData,
+          dissipating: false,
+          map: map
+        });
+
+  </script>
+  </body>
+</html>
