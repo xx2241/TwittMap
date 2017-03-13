@@ -14,7 +14,7 @@ else:
     from http.client import IncompleteRead
 
 
-FILTERED_KEYWORDS = ['Trump', 'China', 'AlphaGo', 'Columbia University', 'Linux', 'Deep Learning', 'Love', 'Amazon', 'Tencent', 'Baidu']
+FILTERED_KEYWORDS = ['Trump', 'China', 'Amazon', 'Football', 'NBA', 'Google', 'Love', 'Facebook', 'iphone', 'Chicken']
 
 
 class TweetStreamListener(tweepy.StreamListener):
@@ -90,7 +90,7 @@ def getCoordinates(api_key, location):
 
 def getKeyWord(text):
     for keyword in FILTERED_KEYWORDS:
-        if keyword in text:
+        if (keyword in text or keyword.lower() in text or keyword.upper() in text):
             keyword = keyword
             break
         else:
