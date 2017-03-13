@@ -7,6 +7,8 @@ import time
 from elasticsearch import Elasticsearch
 from dateutil import parser
 from datetime import datetime
+import urllib3
+urllib3.disable_warnings()
 
 if sys.version_info[0] == 2:
     from httplib import IncompleteRead
@@ -14,7 +16,7 @@ else:
     from http.client import IncompleteRead
 
 
-FILTERED_KEYWORDS = ['Trump', 'China', 'Amazon', 'Football', 'NBA', 'Google', 'Love', 'Facebook', 'iphone', 'Chicken']
+FILTERED_KEYWORDS = ['Trump', 'China', 'Amazon', 'Football', 'Dinner', 'Google', 'Love', 'Facebook', 'Apple', 'Chicken']
 
 
 class TweetStreamListener(tweepy.StreamListener):
@@ -35,7 +37,7 @@ class TweetStreamListener(tweepy.StreamListener):
                 timestamp = parser.parse(cur_data['created_at'])
                 timestamp = timestamp.strftime('%Y-%m-%dT%H:%M:%SZ')
                 author = cur_data['user']['screen_name']
-                if keyword and coordinates:
+                if (keyword and coordinates):
                     mapping = {
                         'keyword': keyword,
                         'author': author,
@@ -48,9 +50,12 @@ class TweetStreamListener(tweepy.StreamListener):
                         print ("Push Status: ", res['created'])
                     except:
                         pass
+                else:
+                    print ("Unstructured data! Pass!")
+            else:
+                print ("No location information! Pass!")
         except Exception as e:
             print (e)
-
 
     def on_status(self, status):
         print ("Status: " + status.text)
@@ -84,7 +89,7 @@ def getCoordinates(api_key, location):
         longitude = api_response_dict['results'][0]['geometry']['location']['lng']
         coordinates = [latitude, longitude]
     else:
-        coordinates = "N/A"
+        coordinates = None
     return coordinates
 
 
@@ -94,7 +99,7 @@ def getKeyWord(text):
             keyword = keyword
             break
         else:
-            keyword = "N/A"
+            keyword = None
     return keyword
 
 

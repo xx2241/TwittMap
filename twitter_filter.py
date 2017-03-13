@@ -1,5 +1,7 @@
 import json
 from elasticsearch import Elasticsearch
+import urllib3
+urllib3.disable_warnings()
 
 
 def getEndPoint():
