@@ -1,8 +1,8 @@
 from flask import *
 from twitter_filter import *
-app = Flask(__name__)
+application = Flask(__name__)
 
-@app.route('/', methods=['GET','POST'])
+@application.route('/', methods=['GET','POST'])
 def tweetmap():
 	if request.method == 'POST':
 		tag = request.form.get('tags')
@@ -14,4 +14,4 @@ def tweetmap():
 
 
 if __name__ == "__main__":
-	app.run(debug=True)
+	application.run(debug=True)

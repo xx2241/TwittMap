@@ -3,7 +3,7 @@ from elasticsearch import Elasticsearch
 
 
 def getEndPoint():
-    with open('../config.txt', 'r') as configfile:
+    with open('./config.txt', 'r') as configfile:
         end_point = configfile.read().splitlines()[4]
         configfile.close()
     return end_point

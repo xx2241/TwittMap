@@ -2,6 +2,8 @@ import sys
 import json
 import tweepy
 import requests
+import math
+import time
 from elasticsearch import Elasticsearch
 from dateutil import parser
 from datetime import datetime
@@ -18,22 +20,25 @@ FILTERED_KEYWORDS = ['Trump', 'China', 'AlphaGo', 'Columbia University', 'Linux'
 class TweetStreamListener(tweepy.StreamListener):
     def __init__(self, es):
         self.es = es
+        self.rate = 0
+        self.other = 0
 
     def on_data(self, data):
         try:
             cur_data = json.loads(data)
             location = cur_data['user']['location']
-            if location and cur_data['lang'] == 'en':
+            if location:
                 text = cur_data['text']
                 keyword = getKeyWord(text)
                 api_key = getApiKey()
                 coordinates = getCoordinates(api_key, location)
                 timestamp = parser.parse(cur_data['created_at'])
                 timestamp = timestamp.strftime('%Y-%m-%dT%H:%M:%SZ')
+                author = cur_data['user']['screen_name']
                 if keyword and coordinates:
                     mapping = {
                         'keyword': keyword,
-                        'author': cur_data['user']['screen_name'],
+                        'author': author,
                         'text': text,
                         'timestamp': timestamp,
                         'coordinates': coordinates,
@@ -44,13 +49,29 @@ class TweetStreamListener(tweepy.StreamListener):
                     except:
                         pass
         except Exception as e:
-            print (str(e))
+            print (e)
+
 
     def on_status(self, status):
         print ("Status: " + status.text)
 
     def on_error(self, status_code):
-        print ("Tweepy Error: " + str(status_code))
+        print ('Error:', str(status_code))
+        if status_code == 420:
+            print ("Rate Limited!")
+            sleepy = 60 * math.pow(2, self.rate)
+            print (time.strftime("%Y%m%d_%H%M%S"))
+            print ("A reconnection attempt will occur in " + \
+            str(sleepy/60) + " minutes.")
+            time.sleep(sleepy)
+            self.rate += 1
+        else:
+            sleepy = 5 * math.pow(2, self.other)
+            print (time.strftime("%Y%m%d_%H%M%S"))
+            print ("A reconnection attempt will occur in " + \
+            str(sleepy) + " seconds.")
+            time.sleep(sleepy)
+            self.other += 1
         return False
 
 
@@ -63,7 +84,7 @@ def getCoordinates(api_key, location):
         longitude = api_response_dict['results'][0]['geometry']['location']['lng']
         coordinates = [latitude, longitude]
     else:
-        coordinates = None
+        coordinates = "N/A"
     return coordinates
 
 
@@ -73,19 +94,19 @@ def getKeyWord(text):
             keyword = keyword
             break
         else:
-            keyword = None
+            keyword = "N/A"
     return keyword
 
 
 def getApiKey():
-    with open('../config.txt', 'rb') as configfile:
+    with open('./config.txt', 'rb') as configfile:
         api_key = configfile.read().splitlines()[5]
         configfile.close()
     return api_key
 
 
 def getCredentials():
-    with open('../config.txt', 'r') as configfile:
+    with open('./config.txt', 'r') as configfile:
         CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN, ACCESS_SECRET, END_POINT = configfile.read().splitlines()[0:5]
         configfile.close()
     return CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN, ACCESS_SECRET, END_POINT
@@ -97,18 +118,22 @@ def main():
     auth.set_access_token(ACCESS_TOKEN, ACCESS_SECRET)
     api = tweepy.API(auth)
     es = Elasticsearch(hosts=END_POINT, port=443, use_ssl=True)
-    while True:
-        try:
-            tweetStreamListener = TweetStreamListener(es)
-            tweetStream = tweepy.Stream(auth=api.auth, listener=tweetStreamListener)
-            tweetStream.filter(track=FILTERED_KEYWORDS, async=True)
-        except IncompleteRead:
-        # reconnect and keep trucking
-            continue
-        except KeyboardInterrupt:
-        # exit this loop
-            tweetStream.disconnect()
-            break
+
+    #while True:
+    #    try:
+    tweetStreamListener = TweetStreamListener(es)
+    tweetStream = tweepy.Stream(auth=api.auth, listener=tweetStreamListener)
+    tweetStream.filter(track=FILTERED_KEYWORDS, async=True)
+    #    except IncompleteRead:
+            # reconnect and keep trucking
+    #        tweetStream.disconnect()
+    #        continue
+    #    except KeyboardInterrupt:
+            # exit
+    #        tweetStream.disconnect()
+    #        break
+    #    except:
+    #        continue
 
 
 if __name__ == '__main__':
