@@ -11,12 +11,43 @@ def getEndPoint():
     return end_point
 
 
+def tweets_geo(coordinates):
+    END_POINT = getEndPoint()
+    es = Elasticsearch(hosts=END_POINT, port=443, use_ssl=True)
+
+    tweet_geo = json.dumps({
+                    "query" : {
+                        "bool" : {
+                            "must" : {
+                                "match_all" : {}
+                            },
+                            "filter" : {
+                                "geo_distance" : {
+                                "distance" : "5km",
+                                "coordinates" : coordinates
+                                }
+                            }
+                        }
+                    }
+                })
+
+    tweets_res = es.search(index="twittmap", doc_type='tweet', body=tweet_geo)
+    geo_res = []
+    for hit in tweets_res['hits']['hits']:
+        geo = hit['_source']['coordinates']
+        if geo:
+            print ("Proximity Coordinates", geo)
+            geo_res.append(geo)
+
+    return geo_res
+
+
 def tweets_filter(keyword):
     END_POINT = getEndPoint()
     es = Elasticsearch(hosts=END_POINT, port=443, use_ssl=True)
 
     tweet_filter = json.dumps({
-                       "from" : 0, "size" : 100,
+                       "from" : 0, "size" : 500,
                        "query": {
                            "match": {
                                'keyword': keyword
@@ -36,7 +67,7 @@ def tweets_filter(keyword):
     for hit in tweets_res['hits']['hits']:
         coordinates = hit['_source']['coordinates']
         if coordinates:
-            print ("Current coordinates", coordinates)
+            print ("Current Coordinate", coordinates)
             location_res.append(coordinates)
 
     return location_res
