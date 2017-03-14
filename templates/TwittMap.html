@@ -17,6 +17,8 @@
     </style>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
     <title>Google Maps Multiple Markers</title>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="{{url_for('static', filename='jquery.js') }}">\x3C/script>')</script>
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyBwscya3QXeuWqVAjv9orSKLKJIEG7w6R8&libraries=visualization"></script>
   </head>
   <body>
@@ -42,6 +44,7 @@
 
   <script type="text/javascript">
     var locations = {{locs}};
+    var xmlhttp = new XMLHttpRequest();
     console.log(locations);
     var map = new google.maps.Map(document.getElementById('map'), {
       zoom: 2,
@@ -71,6 +74,13 @@
     google.maps.event.addListener(map, 'click', function(event) {
         console.log(event.latLng.lat());
         console.log(event.latLng.lng());
+        var lat = event.latLng.lat().toString();
+        var lng = event.latLng.lng().toString();
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.open("POST","/?lat=" + lat + "&lon=" + lng, true);
+        console.log("opening XMLHttpRequest")
+        xmlhttp.send();
+        console.log("sending XMLHttpRequest");
     });
 
   </script>
