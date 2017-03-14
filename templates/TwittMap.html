@@ -44,7 +44,6 @@
 
   <script type="text/javascript">
     var locations = {{locs}};
-    var xmlhttp = new XMLHttpRequest();
     console.log(locations);
     var map = new google.maps.Map(document.getElementById('map'), {
       zoom: 2,
@@ -71,6 +70,7 @@
           dissipating: false,
           map: map
         });
+
     google.maps.event.addListener(map, 'click', function(event) {
         console.log(event.latLng.lat());
         console.log(event.latLng.lng());
