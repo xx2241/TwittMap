@@ -23,8 +23,8 @@ def tweets_geo(coordinates):
                             },
                             "filter" : {
                                 "geo_distance" : {
-                                "distance" : "50km",
-                                "coordinates" : coordinates
+                                    "distance" : "5km",
+                                    "coordinates" : coordinates
                                 }
                             }
                         }
@@ -36,8 +36,9 @@ def tweets_geo(coordinates):
     for hit in tweets_res['hits']['hits']:
         geo = hit['_source']['coordinates']
         if geo:
-            print ("Proximity Coordinates", geo)
-            geo_res.append(geo)
+            geo_ret = [geo[1], geo[0]]
+            print ("Proximity Coordinates", geo_ret)
+            geo_res.append(geo_ret)
 
     return geo_res
 
@@ -67,8 +68,9 @@ def tweets_filter(keyword):
     for hit in tweets_res['hits']['hits']:
         coordinates = hit['_source']['coordinates']
         if coordinates:
-            print ("Current Coordinate", coordinates)
-            location_res.append(coordinates)
+            coordinates_ret = [coordinates[1], coordinates[0]]
+            print ("Current Coordinate", coordinates_ret)
+            location_res.append(coordinates_ret)
 
     return location_res
 

@@ -87,7 +87,7 @@ def getCoordinates(api_key, location):
     if api_response_dict['status'] == "OK":
         latitude = api_response_dict['results'][0]['geometry']['location']['lat']
         longitude = api_response_dict['results'][0]['geometry']['location']['lng']
-        coordinates = [latitude, longitude]
+        coordinates = [longitude, latitude]
     else:
         coordinates = None
     return coordinates

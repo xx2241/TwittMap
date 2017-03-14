@@ -18,13 +18,14 @@
     <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
     <title>Google Maps Multiple Markers</title>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-<script>window.jQuery || document.write('<script src="{{url_for('static', filename='jquery.js') }}">\x3C/script>')</script>
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"
+          rel="stylesheet">
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyBwscya3QXeuWqVAjv9orSKLKJIEG7w6R8&libraries=visualization"></script>
   </head>
   <body>
-    <form method="post">
+    <div>
       Please select a topic from the dropdown -
-        <select name="tags">
+        <select name="tags" id="tags">
           <option selected disabled>Choose here</option>
           <option value="Trump">Trump</option>
           <option value="China">China</option>
@@ -37,52 +38,11 @@
           <option value="Apple">Apple</option>
           <option value="Chicken">Chicken</option>
         </select>
-        <input type="submit" name='tags' value="Plot"/>
-    </form>
+        <button type="button">Search</button>
+    </div>
+    <div id="map"></div>
 
-  <div id="map"></div>
 
-  <script type="text/javascript">
-    var locations = {{locs}};
-    console.log(locations);
-    var map = new google.maps.Map(document.getElementById('map'), {
-      zoom: 2,
-      center: new google.maps.LatLng(2.8, -187.3),
-      mapTypeId: google.maps.MapTypeId.ROADMAP
-    });
-
-    var infowindow = new google.maps.InfoWindow();
-
-    var marker, i;
-    var heatmapData = [];
-
-    for (i = 0; i < locations.length; i++) {
-      var latLng = new google.maps.LatLng(locations[i][0], locations[i][1])
-      heatmapData.push(latLng);
-      //marker = new google.maps.Marker({
-      //  position: latLng,
-      //  map: map
-      //});
-    }
-
-    var heatmap = new google.maps.visualization.HeatmapLayer({
-          data: heatmapData,
-          dissipating: false,
-          map: map
-        });
-
-    google.maps.event.addListener(map, 'click', function(event) {
-        console.log(event.latLng.lat());
-        console.log(event.latLng.lng());
-        var lat = event.latLng.lat().toString();
-        var lng = event.latLng.lng().toString();
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.open("POST","/local?lat=" + lat + "&lon=" + lng, true);
-        console.log("opening XMLHttpRequest")
-        xmlhttp.send();
-        console.log("sending XMLHttpRequest");
-    });
-
-  </script>
+    <script type="text/javascript" src="{{ url_for('static', filename='map.js') }}"> </script>
   </body>
 </html>
