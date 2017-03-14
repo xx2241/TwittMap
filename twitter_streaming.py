@@ -16,7 +16,7 @@ else:
     from http.client import IncompleteRead
 
 
-FILTERED_KEYWORDS = ['Trump', 'China', 'Amazon', 'Football', 'Dinner', 'Google', 'Love', 'Facebook', 'Apple', 'Chicken']
+FILTERED_KEYWORDS = ['Trump', 'China', 'Amazon', 'Football', 'War', 'Google', 'Love', 'Facebook', 'Movie', 'Music']
 
 
 class TweetStreamListener(tweepy.StreamListener):

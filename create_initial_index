@@ -1,4 +1,4 @@
-curl -XPUT search-twittmap-ky-fgzbfoahxmx2okmyighape3sgq.us-east-1.es.amazonaws.com/twittmap -d '
+curl -XPUT search-twittmap-lvm7h7c3kpkrzia336fisfesku.us-east-1.es.amazonaws.com/twittmap -d '
 {
     "mappings": {
         "tweet": {

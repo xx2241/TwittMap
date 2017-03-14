@@ -23,7 +23,7 @@ def tweets_geo(coordinates):
                             },
                             "filter" : {
                                 "geo_distance" : {
-                                    "distance" : "5km",
+                                    "distance" : "100km",
                                     "coordinates" : coordinates
                                 }
                             }
