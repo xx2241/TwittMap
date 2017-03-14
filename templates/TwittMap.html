@@ -77,7 +77,7 @@
         var lat = event.latLng.lat().toString();
         var lng = event.latLng.lng().toString();
         var xmlhttp = new XMLHttpRequest();
-        xmlhttp.open("POST","/?lat=" + lat + "&lon=" + lng, true);
+        xmlhttp.open("POST","/local?lat=" + lat + "&lon=" + lng, true);
         console.log("opening XMLHttpRequest")
         xmlhttp.send();
         console.log("sending XMLHttpRequest");
