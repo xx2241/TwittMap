@@ -28,11 +28,13 @@ def tweetgeo():
         lng = float(request.args['lng'])
         coordinates = [lng, lat]
         print ([coordinates[1], coordinates[0]])
-        locs = tweets_geo(coordinates)
+        locs, text, user = tweets_geo(coordinates)
         print (locs)
-        return jsonify({'locs': locs})
+        print (text)
+        print (user)
+        return jsonify({'locs': locs, 'text': text, 'user': user})
     else:
-        return jsonify({'locs': []})
+        return jsonify({'locs': [], 'text': [], 'user': []})
 
 
 if __name__ == "__main__":

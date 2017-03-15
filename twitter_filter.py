@@ -33,14 +33,20 @@ def tweets_geo(coordinates):
 
     tweets_res = es.search(index="twittmap", doc_type='tweet', body=tweet_geo)
     geo_res = []
+    text_res = []
+    user_res = []
     for hit in tweets_res['hits']['hits']:
         geo = hit['_source']['coordinates']
+        text = hit['_source']['text']
+        user = hit['_source']['author']
         if geo:
             geo_ret = [geo[1], geo[0]]
             print ("Proximity Coordinates", geo_ret)
             geo_res.append(geo_ret)
+            text_res.append(text)
+            user_res.append(user)
 
-    return geo_res
+    return geo_res, text_res, user_res
 
 
 def tweets_filter(keyword):

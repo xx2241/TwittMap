@@ -1,4 +1,6 @@
-var locations = null
+var locations = null;
+var text = null;
+var user = null;
 var marker, tweet;
 var heatmap;
 var markerSet = new Array();
@@ -48,8 +50,13 @@ $('button').on('click',function(){
       }
       heatmap = new google.maps.visualization.HeatmapLayer({
         data: heatmapData,
-        dissipating: false,
         map: map
+      });
+      heatmap.setOptions({
+        dissipating: true,
+        maxIntensity: 10,
+        radius: 50,
+        opacity: 0.9,
       });
     },
     error: function(xhr, type) {
@@ -58,7 +65,6 @@ $('button').on('click',function(){
   })
 })
 
-//event.preventDefault();
 
 google.maps.event.addListener(map, 'click', function(event) {
   if (heatmap) {
@@ -78,8 +84,17 @@ google.maps.event.addListener(map, 'click', function(event) {
   }
   marker = new google.maps.Marker({
     position: {lat: lat, lng: lng},
-    map: map
-  })
+    map: map,
+    clickable: true
+  });
+
+  marker.info = new google.maps.InfoWindow({
+    content: lat.toString() + ', ' + lng.toString()
+  });
+
+  google.maps.event.addListener(marker, 'click', function() {
+    marker.info.open(map, marker);
+  });
 
   $.getJSON('/local', {
     lat: lat,
@@ -88,16 +103,26 @@ google.maps.event.addListener(map, 'click', function(event) {
     console.log("Click! Backend to Frontend!")
     locations = data.locs
     console.log(locations)
+    text = data.text
+    console.log(text)
+    user = data.user
+    console.log(user)
 
     var image = 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png';
     for (var i = 0; i < locations.length; i++) {
       var latLng = new google.maps.LatLng(locations[i][0], locations[i][1])
-      tweet = new google.maps.Marker({
+      var tweet = new google.maps.Marker({
         position: latLng,
         map: map,
         icon: image
-      })
-      markerSet.push(tweet)
+      });
+      google.maps.event.addListener(tweet, 'click', (function(tweet, i) {
+        return function() {
+          infowindow.setContent('@' + user[i] +': ' + '<b>' + text[i] + '</b>');
+          infowindow.open(map, tweet);
+        }
+      })(tweet, i));
+      markerSet.push(tweet);
     }
   })
   return false

@@ -26,36 +26,36 @@ class TweetStreamListener(tweepy.StreamListener):
         self.other = 0
 
     def on_data(self, data):
-        try:
-            cur_data = json.loads(data)
-            location = cur_data['user']['location']
-            if location:
-                text = cur_data['text']
-                keyword = getKeyWord(text)
-                api_key = getApiKey()
-                coordinates = getCoordinates(api_key, location)
-                timestamp = parser.parse(cur_data['created_at'])
-                timestamp = timestamp.strftime('%Y-%m-%dT%H:%M:%SZ')
-                author = cur_data['user']['screen_name']
-                if (keyword and coordinates):
-                    mapping = {
+            try:
+                cur_data = json.loads(data)
+                location = cur_data['user']['location']
+                if location:
+                    text = cur_data['text']
+                    keyword = getKeyWord(text)
+                    api_key = getApiKey()
+                    coordinates = getCoordinates(api_key, location)
+                    timestamp = parser.parse(cur_data['created_at'])
+                    timestamp = timestamp.strftime('%Y-%m-%dT%H:%M:%SZ')
+                    author = cur_data['user']['screen_name']
+                    if (keyword and coordinates):
+                        mapping = {
                         'keyword': keyword,
                         'author': author,
                         'text': text,
                         'timestamp': timestamp,
                         'coordinates': coordinates,
-                    }
-                    try:
-                        res = self.es.index(index="twittmap", doc_type='tweet', id=cur_data['user']['id'], body=mapping)
-                        print ("Push Status: ", res['created'])
-                    except:
-                        pass
+                        }
+                        try:
+                            res = self.es.index(index="twittmap", doc_type='tweet', id=cur_data['user']['id'], body=mapping)
+                            print ("Push Status: ", res['created'])
+                        except:
+                            pass
+                    else:
+                        print ("Unstructured data! Pass!")
                 else:
-                    print ("Unstructured data! Pass!")
-            else:
-                print ("No location information! Pass!")
-        except Exception as e:
-            print (e)
+                    print ("No location information! Pass!")
+            except Exception as e:
+                print (e)
 
     def on_status(self, status):
         print ("Status: " + status.text)
@@ -124,21 +124,19 @@ def main():
     api = tweepy.API(auth)
     es = Elasticsearch(hosts=END_POINT, port=443, use_ssl=True)
 
-    #while True:
-    #    try:
     tweetStreamListener = TweetStreamListener(es)
-    tweetStream = tweepy.Stream(auth=api.auth, listener=tweetStreamListener)
-    tweetStream.filter(track=FILTERED_KEYWORDS, async=True)
-    #    except IncompleteRead:
+    while True:
+        try:
+            tweetStream = tweepy.Stream(auth=api.auth, listener=tweetStreamListener)
+            tweetStream.filter(track=FILTERED_KEYWORDS)
+        except IncompleteRead:
             # reconnect and keep trucking
-    #        tweetStream.disconnect()
-    #        continue
-    #    except KeyboardInterrupt:
+            tweetStream.disconnect()
+            continue
+        except KeyboardInterrupt:
             # exit
-    #        tweetStream.disconnect()
-    #        break
-    #    except:
-    #        continue
+            tweetStream.disconnect()
+            break
 
 
 if __name__ == '__main__':
