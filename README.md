@@ -1,11 +1,10 @@
 # TwittMap
 ## COMSW6998 Clouding Computing and Big Data
 ## Assignment 1: TwittMap with Trends
-<br>
-HW Group 30 <br>
+<br>HW Group 30 <br>
 Authors: <br>
-**Kuang Yang**, **ky2342** <br>
-**Xun Xue**, **xx2241**
+Kuang Yang, ky2342 <br>
+Xun Xue, xx2241
 
 ### Step 1: Create Amazon Elasticsearch Service domain
 * We choose **Elasticsearch** version 2.3. The instance type is t2.micro. The storage type is EBS.
