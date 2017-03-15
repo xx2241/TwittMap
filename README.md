@@ -1,16 +1,17 @@
 # TwittMap
 ## COMSW6998 Clouding Computing and Big Data
 ## Assignment 1: TwittMap with Trends
+<br>
 HW Group 30 <br>
 Authors: <br>
-Kuang Yang, ky2342 <br>
-Xun Xue, xx2241
+**Kuang Yang**, **ky2342** <br>
+**Xun Xue**, **xx2241**
 
 ### Step 1: Create Amazon Elasticsearch Service domain
 * We choose **Elasticsearch** version 2.3. The instance type is t2.micro. The storage type is EBS.
 * Select the access policy to allow open access to the domain for simplicity. You should choose a stricter policy in the real-world application.
 
-### Step 2: Create Index
+### Step 2: Create Index on AWS Elasticsearch
 * Run the command below in the terminal(This command is stored in the file *create_initial_index*). In the endpoint of domain *twittmap*, it creates an index(database) called *twittmap* with its type as *tweets*.
 ```
 curl -XPUT search-twittmap-lvm7h7c3kpkrzia336fisfesku.us-east-1.es.amazonaws.com/twittmap -d '
@@ -46,7 +47,7 @@ curl -XPUT search-twittmap-lvm7h7c3kpkrzia336fisfesku.us-east-1.es.amazonaws.com
 * This program uses **Twitter Streaming API** and **Tweepy** to fetch tweets from the twitter hose in real-time.
 * This program stores processed and structured data on **AWS Elasticsearch**.
 * Link to Tweepy: https://github.com/tweepy/tweepy
-* Comments: This application can run under both Python2 and Python3 environment. However, Python2 is more preferred. If you encountered any issues, make sure you test under Python2 environment. If you have any problems in collecting tweets streaming, update your Tweepy first and restart this script manually. Thanks!
+* Comments: This application can run under both Python2 and Python3 environment. **However, Python2 is more preferred**. If you encountered any issues, make sure you test under Python2 environment. If you have any problems in collecting tweets streaming, update your Tweepy first and restart this script manually. Thanks!
 
 ### Step 4: Create Web UI
 * Create a Web UI using **HTML** and **JavaScript** to allow users to choose any keyword(up to 10) through a dropdown box.
